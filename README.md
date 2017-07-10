@@ -1,11 +1,11 @@
-USB HID Connection Monitor/Trigger
-----------------------------------
+Udev Device Connection Nofity/Trigger
+-------------------------------------
 
-This is a tool that watches for connecting USB HID devices, looks for ones that
-match based on some property and runs a configured command. I use this to
-configure my trackball and to set my USB DAC as the default-sink for pulseaudio
-when it is plugged in. I run it as part of my user session as a systemd user
-service.
+This is a tool that watches for connecting devices via udev, it looks for ones
+that match based on a property and runs a configured command. I use this with
+my laptop to configure my trackball and to set my USB DAC as the default-sink
+for pulseaudio when it is plugged in. I run it as part of my user session as a
+systemd user service.
 
 Right now the property/value/command configuration is just hard coded at the
 top. I might add a config file if I feel like it or someone asks.

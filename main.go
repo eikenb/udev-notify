@@ -25,6 +25,18 @@ type rule struct {
 	PropName, PropValue, Command string
 }
 
+// which udev subsystems to monitor
+var subsystems = []string{
+	"hid", // USB Devices
+	"drm", // External Display
+}
+
+// Return property name to use as header for this type of subsystem
+var subSysHeaderProp = map[string]string{
+	"hid": "HID_NAME",
+	"drm": "DEVPATH",
+}
+
 // Device rules
 var rules []rule = []rule{
 	{
@@ -44,7 +56,7 @@ var rules []rule = []rule{
 var listem bool
 
 func init() {
-	flag.BoolVar(&listem, "list", false, "List HID devices connected.")
+	flag.BoolVar(&listem, "list", false, "List devices connected.")
 	flag.Parse()
 }
 
@@ -109,7 +121,10 @@ func commandRunners() chan<- rule {
 func deviceChan() <-chan device {
 	u := udev.Udev{}
 	m := u.NewMonitorFromNetlink("udev")
-	m.FilterAddMatchSubsystem("hid")
+
+	for _, sub := range subsystems {
+		m.FilterAddMatchSubsystem(sub)
+	}
 
 	done := make(chan struct{})
 	devchan := make(chan device)
@@ -138,12 +153,14 @@ func sighalt() <-chan os.Signal {
 	return interrupts
 }
 
-// display the list of HID devices
+// display the list of devices
 func displayDeviceList() {
 	u := udev.Udev{}
 	e := u.NewEnumerate()
 
-	e.AddMatchSubsystem("hid")
+	for _, sub := range subsystems {
+		e.AddMatchSubsystem(sub)
+	}
 	e.AddMatchIsInitialized()
 
 	udev_devices, err := e.Devices()
@@ -159,18 +176,20 @@ func displayDeviceList() {
 	fmt.Println(deviceList(devices))
 }
 
-// returns list of connected HID devices and properties
+// returns list of connected devices and properties
 func deviceList(devices []device) []string {
 	result := []string{}
-	for i := range devices {
-		device := devices[i]
-		hid_name := strings.TrimSpace(device.PropertyValue("HID_NAME"))
+	for _, dev := range devices {
+		name := "Mising subsystem name field"
+		name_prop, ok := subSysHeaderProp[dev.PropertyValue("SUBSYSTEM")]
+		if ok {
+			name = strings.TrimSpace(dev.PropertyValue(name_prop))
+		}
 		result = append(result,
-			fmt.Sprintf("\n%s\n%s\n", hid_name,
-				strings.Repeat("-", len(hid_name))))
+			fmt.Sprintf("\n%s\n%s\n", name, strings.Repeat("-", len(name))))
 		result = append(result,
 			fmt.Sprintf("%s = %s\n", "PropertyName", "PropertyValue"))
-		properties := device.Properties()
+		properties := dev.Properties()
 		ordered_keys := make([]string, 0, len(properties))
 		for k := range properties {
 			ordered_keys = append(ordered_keys, k)

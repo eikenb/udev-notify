@@ -22,8 +22,8 @@ func (f dev) PropertyValue(k string) string {
 }
 
 var fakedevices = []device{
-	dev{"HID_NAME": "foo", "OTHER_PROP": "fp"},
-	dev{"HID_NAME": "bar", "OTHER_PROP": "bp"},
+	dev{"HID_NAME": "foo", "SUBSYSTEM": "hid"},
+	dev{"HID_NAME": "bar", "SUBSYSTEM": "hid"},
 }
 
 func TestWatchLoop(t *testing.T) {
@@ -51,9 +51,9 @@ func TestWatchLoop(t *testing.T) {
 
 var asstrings = []string{
 	"\nfoo\n---\n", "PropertyName = PropertyValue\n",
-	"- HID_NAME = \"foo\"\n", "- OTHER_PROP = \"fp\"\n",
+	"- HID_NAME = \"foo\"\n", "- SUBSYSTEM = \"hid\"\n",
 	"\nbar\n---\n", "PropertyName = PropertyValue\n",
-	"- HID_NAME = \"bar\"\n", "- OTHER_PROP = \"bp\"\n",
+	"- HID_NAME = \"bar\"\n", "- SUBSYSTEM = \"hid\"\n",
 }
 
 func TestDeviceList(t *testing.T) {
