@@ -173,13 +173,8 @@ func displayDeviceList() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	devices := make([]device, len(udev_devices))
-	for i, d := range udev_devices {
-		devices[i] = device(d)
-	}
-
-	for _, dev := range devices {
-		fmt.Println(devString(dev))
+	for _, d := range udev_devices {
+		fmt.Println(devString(device(d)))
 	}
 }
 
