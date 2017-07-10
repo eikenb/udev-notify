@@ -1,4 +1,5 @@
-= USB HID Connection Monitor/Trigger
+USB HID Connection Monitor/Trigger
+----------------------------------
 
 This is a tool that watches for connecting USB HID devices, looks for ones that
 match based on some property and runs a configured command. I use this to
@@ -11,3 +12,10 @@ top. I might add a config file if I feel like it or someone asks.
 
 If call with '-list' it will list all your HID devices and their properties. To
 make it easier to configure new entries.
+
+Copyright
+---------
+
+[CC0](http://creativecommons.org/publicdomain/zero/1.0/); To the extent
+possible under law, John Eikenberry has waived all copyright and related or
+neighboring rights to this work. This work is published from: United States.
