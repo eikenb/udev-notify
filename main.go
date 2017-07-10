@@ -89,10 +89,9 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 	}
 	for d := range devchan {
 		if watched_actions[d.Action()] {
-			props := d.Properties()
 			for _, rule := range rules {
-				val := strings.TrimSpace(props[rule.PropName])
-				if val == rule.PropValue {
+				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
+				if pval == rule.PropValue && rule.Action == d.Action() {
 					matchchan <- rule
 				}
 			}
