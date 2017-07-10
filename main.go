@@ -142,6 +142,7 @@ func deviceChan() <-chan device {
 		<-sighalt()
 		close(done)
 	}()
+	// wrap udev's chan in one that I can control the type
 	go func() {
 		for d := range ch {
 			devchan <- d
@@ -174,7 +175,7 @@ func displayDeviceList() {
 		os.Exit(1)
 	}
 	for _, d := range udev_devices {
-		fmt.Println(devString(device(d)))
+		fmt.Println(devString(d))
 	}
 }
 
