@@ -22,7 +22,7 @@ const SCRIPT_PATH = "${HOME}/bin/xinput.d"
 const WORKERS = 2
 
 type rule struct {
-	PropName, PropValue, Command string
+	PropName, PropValue, Command, Action string
 }
 
 // which udev subsystems to monitor
@@ -43,11 +43,13 @@ var rules []rule = []rule{
 		PropName:  "HID_NAME",
 		PropValue: "2010 REV 1.7 Audioengine D1",
 		Command:   "set-default-sink",
+		Action:    "add",
 	},
 	{
 		PropName:  "HID_NAME",
 		PropValue: "Kensington Kensington Slimblade Trackball",
 		Command:   "slimblade",
+		Action:    "add",
 	},
 }
 
@@ -81,12 +83,16 @@ type device interface {
 // main loop
 // monitors udev events, looks for matches and runs commands
 func watchLoop(devchan <-chan device, matchchan chan<- rule) {
+	watched_actions := map[string]bool{}
+	for _, rule := range rules {
+		watched_actions[rule.Action] = true
+	}
 	for d := range devchan {
-		if d.Action() == "add" {
+		if watched_actions[d.Action()] {
 			props := d.Properties()
 			for _, rule := range rules {
-				val, ok := props[rule.PropName]
-				if ok && strings.TrimSpace(val) == rule.PropValue {
+				val := strings.TrimSpace(props[rule.PropName])
+				if val == rule.PropValue {
 					matchchan <- rule
 				}
 			}

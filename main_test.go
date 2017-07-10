@@ -27,7 +27,7 @@ var fakedevices = []device{
 
 func TestWatchLoop(t *testing.T) {
 	rules = []rule{
-		{PropName: "HID_NAME", PropValue: "foo", Command: "foo"},
+		{PropName: "HID_NAME", PropValue: "foo", Command: "foo", Action: "add"},
 	}
 	devchan := make(chan device)
 	matchchan := make(chan rule)
