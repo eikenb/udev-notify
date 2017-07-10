@@ -1,7 +1,6 @@
 package main
 
 import (
-	"reflect"
 	"testing"
 )
 
@@ -49,16 +48,26 @@ func TestWatchLoop(t *testing.T) {
 	}
 }
 
-var asstrings = []string{
-	"\nfoo\n---\n", "PropertyName = PropertyValue\n",
-	"- HID_NAME = \"foo\"\n", "- SUBSYSTEM = \"hid\"\n",
-	"\nbar\n---\n", "PropertyName = PropertyValue\n",
-	"- HID_NAME = \"bar\"\n", "- SUBSYSTEM = \"hid\"\n",
+var asstrings = []string{`
+foo
+---
+PropertyName = PropertyValue
+- HID_NAME = "foo"
+- SUBSYSTEM = "hid"
+`, `
+bar
+---
+PropertyName = PropertyValue
+- HID_NAME = "bar"
+- SUBSYSTEM = "hid"
+`,
 }
 
 func TestDeviceList(t *testing.T) {
-	res := deviceList(fakedevices)
-	if !reflect.DeepEqual(res, asstrings) {
-		t.Error("list format is wrong, got:", res, "want:", asstrings)
+	for i := range fakedevices {
+		str := devString(fakedevices[i])
+		if str != asstrings[i] {
+			t.Error("list format is wrong, got:", str, "want:", asstrings[i])
+		}
 	}
 }

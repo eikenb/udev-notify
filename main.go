@@ -173,33 +173,34 @@ func displayDeviceList() {
 		devices[i] = device(d)
 	}
 
-	fmt.Println(deviceList(devices))
+	for _, dev := range devices {
+		fmt.Println(devString(dev))
+	}
 }
 
 // returns list of connected devices and properties
-func deviceList(devices []device) []string {
-	result := []string{}
-	for _, dev := range devices {
-		name := "Mising subsystem name field"
-		name_prop, ok := subSysHeaderProp[dev.PropertyValue("SUBSYSTEM")]
-		if ok {
-			name = strings.TrimSpace(dev.PropertyValue(name_prop))
-		}
-		result = append(result,
-			fmt.Sprintf("\n%s\n%s\n", name, strings.Repeat("-", len(name))))
-		result = append(result,
-			fmt.Sprintf("%s = %s\n", "PropertyName", "PropertyValue"))
-		properties := dev.Properties()
-		ordered_keys := make([]string, 0, len(properties))
-		for k := range properties {
-			ordered_keys = append(ordered_keys, k)
-		}
-		sort.Sort(sort.StringSlice(ordered_keys))
-		for _, k := range ordered_keys {
-			v := properties[k]
-			result = append(result,
-				fmt.Sprintf("- %s = \"%s\"\n", k, strings.TrimSpace(v)))
-		}
+func devString(dev device) string {
+	name := "Mising subsystem name field"
+	name_prop, ok := subSysHeaderProp[dev.PropertyValue("SUBSYSTEM")]
+	if ok {
+		name = strings.TrimSpace(dev.PropertyValue(name_prop))
 	}
-	return result
+	properties := dev.Properties()
+	ordered_keys := make([]string, 0, len(properties))
+	result := make([]string, 0, len(properties)+2)
+
+	result = append(result,
+		fmt.Sprintf("\n%s\n%s\n", name, strings.Repeat("-", len(name))))
+	result = append(result,
+		fmt.Sprintf("%s = %s\n", "PropertyName", "PropertyValue"))
+	for k := range properties {
+		ordered_keys = append(ordered_keys, k)
+	}
+	sort.Sort(sort.StringSlice(ordered_keys))
+	for _, k := range ordered_keys {
+		v := properties[k]
+		result = append(result,
+			fmt.Sprintf("- %s = \"%s\"\n", k, strings.TrimSpace(v)))
+	}
+	return strings.Join(result, "")
 }
