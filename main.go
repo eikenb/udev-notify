@@ -21,7 +21,7 @@ import (
 //
 // Location of scripts
 const SCRIPT_PATH = "${HOME}/bin/xinput.d"
-const WORKERS = 2
+const WORKERS = 3
 
 type rule struct {
 	PropName, PropValue, Command, Action string
@@ -116,6 +116,8 @@ func commandRunners() chan<- rule {
 	for i := 0; i < WORKERS; i++ {
 		go func() {
 			for r := range matchchan {
+				time.Sleep(200 * time.Millisecond)
+				fmt.Println("************************ rule fired: ", r.Command)
 				cmd := exec.Command(
 					filepath.Join(os.ExpandEnv(SCRIPT_PATH), r.Command))
 				out, err := cmd.CombinedOutput()
