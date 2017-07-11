@@ -77,7 +77,6 @@ func main() {
 
 // abstract the *Device type so I can create test entries
 type device interface {
-	Syspath() string
 	Action() string
 	Properties() map[string]string
 	PropertyValue(string) string
