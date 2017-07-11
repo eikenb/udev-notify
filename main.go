@@ -9,7 +9,9 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync/atomic"
 	"syscall"
+	"time"
 
 	"github.com/jochenvg/go-udev"
 )
@@ -23,6 +25,7 @@ const WORKERS = 2
 
 type rule struct {
 	PropName, PropValue, Command, Action string
+	limiter                              int32
 }
 
 // which udev subsystems to monitor
@@ -92,7 +95,13 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 			for _, rule := range rules {
 				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
 				if pval == rule.PropValue && rule.Action == d.Action() {
-					matchchan <- rule
+					if atomic.CompareAndSwapInt32(&rule.limiter, 0, 1) {
+						go func() {
+							time.Sleep(time.Second)
+							atomic.CompareAndSwapInt32(&rule.limiter, 1, 0)
+						}()
+						matchchan <- rule
+					}
 				}
 			}
 		}
