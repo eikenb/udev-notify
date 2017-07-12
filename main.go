@@ -102,7 +102,9 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 		if watched_actions[d.Action()] {
 			for _, rule := range rules {
 				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
-				if pval == rule.PropValue && rule.Action == d.Action() {
+				prop_test := strings.HasSuffix(pval, rule.PropValue)
+				action_test := rule.Action == d.Action()
+				if prop_test && action_test {
 					if atomic.CompareAndSwapInt32(&rule.limiter, 0, 1) {
 						go func() {
 							time.Sleep(time.Second)
