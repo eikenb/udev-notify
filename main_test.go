@@ -59,18 +59,14 @@ func TestCommandRunner(t *testing.T) {
 	time.Sleep(time.Millisecond)
 }
 
-var asstrings = []string{`
-foo
----
-PropertyName = PropertyValue
-- HID_NAME = "foo"
-- SUBSYSTEM = "hid"
-`, `
-bar
----
-PropertyName = PropertyValue
-- HID_NAME = "bar"
-- SUBSYSTEM = "hid"
+var asstrings = []string{`---
+
+HID_NAME = "foo"
+SUBSYSTEM = "hid"
+`, `---
+
+HID_NAME = "bar"
+SUBSYSTEM = "hid"
 `,
 }
 
