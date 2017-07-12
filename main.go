@@ -21,7 +21,9 @@ import (
 //
 // Location of scripts
 const SCRIPT_PATH = "${HOME}/bin/xinput.d"
-const WORKERS = 3
+
+var Workers = 3
+var WorkerDelay = 200 * time.Millisecond
 
 type rule struct {
 	PropName, PropValue, Command, Action string
@@ -112,14 +114,16 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 // use a small pool in case a script is slow
 func commandRunners() chan<- rule {
 	matchchan := make(chan rule)
-	for i := 0; i < WORKERS; i++ {
+	for i := 0; i < Workers; i++ {
 		go func() {
 			for r := range matchchan {
-				time.Sleep(200 * time.Millisecond)
+				time.Sleep(WorkerDelay)
 				fmt.Println("************************ rule fired: ", r.Command)
-				cmd := exec.Command(
-					filepath.Join(os.ExpandEnv(SCRIPT_PATH), r.Command))
-				out, err := cmd.CombinedOutput()
+				cmd := r.Command
+				if !filepath.IsAbs(cmd) {
+					cmd = filepath.Join(os.ExpandEnv(SCRIPT_PATH), r.Command)
+				}
+				out, err := exec.Command(cmd).CombinedOutput()
 				if err != nil {
 					fmt.Println(err)
 				}

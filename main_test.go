@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+	"time"
 )
 
 type ruletest struct {
@@ -46,6 +47,16 @@ func TestWatchLoop(t *testing.T) {
 	if out.Command != "" {
 		t.Error("Rule mis-match, should have got nil rule, got: ", out)
 	}
+}
+
+// more an intergration test, but
+func TestCommandRunner(t *testing.T) {
+	Workers = 1
+	WorkerDelay = time.Nanosecond
+	matchchan := commandRunners()
+	matchchan <- rule{Command: "/bin/true"}
+	matchchan <- rule{Command: "/bin/false"}
+	time.Sleep(time.Millisecond)
 }
 
 var asstrings = []string{`
