@@ -36,12 +36,6 @@ var subsystems = []string{
 	"drm", // External Display
 }
 
-// Return property name to use as header for this type of subsystem
-var subSysHeaderProp = map[string]string{
-	"hid": "HID_NAME",
-	"drm": "DEVPATH",
-}
-
 // Device rules
 var rules []rule = []rule{
 	{
@@ -198,19 +192,11 @@ func displayDeviceList() {
 
 // returns list of connected devices and properties
 func devString(dev device) string {
-	name := "Mising subsystem name field"
-	name_prop, ok := subSysHeaderProp[dev.PropertyValue("SUBSYSTEM")]
-	if ok {
-		name = strings.TrimSpace(dev.PropertyValue(name_prop))
-	}
 	properties := dev.Properties()
 	ordered_keys := make([]string, 0, len(properties))
-	result := make([]string, 0, len(properties)+2)
+	result := make([]string, 0, len(properties)+1)
 
-	result = append(result,
-		fmt.Sprintf("\n%s\n%s\n", name, strings.Repeat("-", len(name))))
-	result = append(result,
-		fmt.Sprintf("%s = %s\n", "PropertyName", "PropertyValue"))
+	result = append(result, fmt.Sprintf("%s\n\n", strings.Repeat("-", 3)))
 	for k := range properties {
 		ordered_keys = append(ordered_keys, k)
 	}
@@ -218,7 +204,7 @@ func devString(dev device) string {
 	for _, k := range ordered_keys {
 		v := properties[k]
 		result = append(result,
-			fmt.Sprintf("- %s = \"%s\"\n", k, strings.TrimSpace(v)))
+			fmt.Sprintf("%s = \"%s\"\n", k, strings.TrimSpace(v)))
 	}
 	return strings.Join(result, "")
 }
