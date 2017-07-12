@@ -19,35 +19,39 @@ import (
 // ---------------------------------------------------------------------
 // Configuration
 //
-// Location of scripts
+// Location of scripts (absolute paths ignore this)
 const SCRIPT_PATH = "${HOME}/bin/xinput.d"
 
-// which udev subsystems to monitor
+// Subsystems to monitor
 // "ls /sys/class" will give you the basic options
 var subsystems = []string{
 	"hid", // USB Devices
 	"drm", // External Display
 }
 
-// Device rules
+// Device rules:
+// PropName is the name of the device property to match against
+// PropValue is the value to match against (suffix match)
+// Action the udev "action" to filter on (add, remove, change, online, offline)
+// Command is the name of your script/program to run
 var rules []rule = []rule{
 	{
 		PropName:  "HID_NAME",
 		PropValue: "FiiO DigiHug USB Audio",
-		Command:   "set-default-sink",
 		Action:    "add",
+		Command:   "set-default-sink",
 	},
 	{
 		PropName:  "HID_NAME",
 		PropValue: "2010 REV 1.7 Audioengine D1",
-		Command:   "set-default-sink",
 		Action:    "add",
+		Command:   "set-default-sink",
 	},
 	{
 		PropName:  "HID_NAME",
 		PropValue: "Kensington Kensington Slimblade Trackball",
-		Command:   "slimblade",
 		Action:    "add",
+		Command:   "slimblade",
 	},
 }
 
