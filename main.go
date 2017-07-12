@@ -22,15 +22,8 @@ import (
 // Location of scripts
 const SCRIPT_PATH = "${HOME}/bin/xinput.d"
 
-var Workers = 3
-var WorkerDelay = 200 * time.Millisecond
-
-type rule struct {
-	PropName, PropValue, Command, Action string
-	limiter                              int32
-}
-
 // which udev subsystems to monitor
+// "ls /sys/class" will give you the basic options
 var subsystems = []string{
 	"hid", // USB Devices
 	"drm", // External Display
@@ -38,6 +31,12 @@ var subsystems = []string{
 
 // Device rules
 var rules []rule = []rule{
+	{
+		PropName:  "HID_NAME",
+		PropValue: "FiiO DigiHug USB Audio",
+		Command:   "set-default-sink",
+		Action:    "add",
+	},
 	{
 		PropName:  "HID_NAME",
 		PropValue: "2010 REV 1.7 Audioengine D1",
@@ -53,6 +52,14 @@ var rules []rule = []rule{
 }
 
 // ---------------------------------------------------------------------
+//
+var Workers = 3
+var WorkerDelay = 200 * time.Millisecond
+
+type rule struct {
+	PropName, PropValue, Command, Action string
+	limiter                              int32
+}
 
 var listem bool
 
@@ -60,6 +67,8 @@ func init() {
 	flag.BoolVar(&listem, "list", false, "List devices connected.")
 	flag.Parse()
 }
+
+// ---------------------------------------------------------------------
 
 func main() {
 	if listem {
