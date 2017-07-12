@@ -149,8 +149,7 @@ func deviceChan() <-chan device {
 	devchan := make(chan device)
 	ch, err := m.DeviceChan(done)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fatal(err)
 	}
 	go func() {
 		<-sighalt()
@@ -164,6 +163,11 @@ func deviceChan() <-chan device {
 		close(devchan)
 	}()
 	return devchan
+}
+
+func fatal(i ...interface{}) {
+	fmt.Fprintln(os.Stderr, i...)
+	os.Exit(1)
 }
 
 // watch for signals to quit
@@ -185,8 +189,7 @@ func displayDeviceList() {
 
 	udev_devices, err := e.Devices()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fatal(err)
 	}
 	for _, d := range udev_devices {
 		fmt.Println(devString(d))
