@@ -24,10 +24,10 @@ var Workers = 3
 var WorkerDelay = 200 * time.Millisecond
 
 // Flags
-var listem bool
+var list_devs bool
 
 func init() {
-	flag.BoolVar(&listem, "list", false, "List devices connected.")
+	flag.BoolVar(&list_devs, "list", false, "List devices connected.")
 	flag.Parse()
 }
 
@@ -48,7 +48,7 @@ func main() {
 	for _, r := range conf.Rules {
 		subsystems[r.Subsystem] = struct{}{}
 	}
-	if listem {
+	if list_devs {
 		displayDeviceList()
 	} else {
 		devchan := deviceChan()
