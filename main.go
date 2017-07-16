@@ -25,10 +25,16 @@ var WorkerDelay = 200 * time.Millisecond
 
 // Flags
 var list_devs bool
+var monit bool
+var monit_subsystems []string
 
 func init() {
 	flag.BoolVar(&list_devs, "list", false, "List devices connected.")
+	flag.BoolVar(&monit, "monit", false, "Print device events to STDOUT.")
 	flag.Parse()
+	if monit {
+		monit_subsystems = flag.Args()
+	}
 }
 
 // abstract the *Device type so I can create test entries
@@ -44,10 +50,24 @@ func main() {
 	conf := getConfig()
 	if list_devs {
 		displayDeviceList(conf)
+	} else if monit {
+		if len(monit_subsystems) > 0 {
+			conf.subsystems = monit_subsystems
+			fmt.Println("Monitored subsystem override:", monit_subsystems)
+		}
+		devchan := deviceChan(conf)
+		printerChan(devchan)
 	} else {
 		devchan := deviceChan(conf)
 		matchchan := commandRunners(conf)
 		watchLoop(devchan, matchchan, conf)
+	}
+}
+
+//
+func printerChan(devchan <-chan device) {
+	for d := range devchan {
+		fmt.Println(devString(d))
 	}
 }
 
