@@ -22,13 +22,6 @@ import (
 // Location of scripts (absolute paths ignore this)
 const SCRIPT_PATH = "${HOME}/bin/xinput.d"
 
-// Subsystems to monitor
-// "ls /sys/class" will give you the basic options
-var subsystems = []string{
-	"hid", // USB Devices
-	"drm", // External Display
-}
-
 // Device rules:
 // PropName is the name of the device property to match against
 // PropValue is the value to match against (suffix match)
@@ -36,18 +29,21 @@ var subsystems = []string{
 // Command is the name of your script/program to run
 var rules []rule = []rule{
 	{
+		Subsystem: "hid",
 		PropName:  "HID_NAME",
 		PropValue: "FiiO DigiHug USB Audio",
 		Action:    "add",
 		Command:   "set-default-sink",
 	},
 	{
+		Subsystem: "hid",
 		PropName:  "HID_NAME",
 		PropValue: "2010 REV 1.7 Audioengine D1",
 		Action:    "add",
 		Command:   "set-default-sink",
 	},
 	{
+		Subsystem: "hid",
 		PropName:  "HID_NAME",
 		PropValue: "Kensington Kensington Slimblade Trackball",
 		Action:    "add",
@@ -61,15 +57,19 @@ var Workers = 3
 var WorkerDelay = 200 * time.Millisecond
 
 type rule struct {
-	PropName, PropValue, Command, Action string
-	limiter                              int32
+	PropName, PropValue, Command, Action, Subsystem string
+	limiter                                         int32
 }
 
 var listem bool
+var subsystems map[string]struct{} = make(map[string]struct{})
 
 func init() {
 	flag.BoolVar(&listem, "list", false, "List devices connected.")
 	flag.Parse()
+	for _, r := range rules {
+		subsystems[r.Subsystem] = struct{}{}
+	}
 }
 
 // ---------------------------------------------------------------------
@@ -150,7 +150,7 @@ func deviceChan() <-chan device {
 	u := udev.Udev{}
 	m := u.NewMonitorFromNetlink("udev")
 
-	for _, sub := range subsystems {
+	for sub := range subsystems {
 		m.FilterAddMatchSubsystem(sub)
 	}
 
@@ -191,7 +191,7 @@ func displayDeviceList() {
 	u := udev.Udev{}
 	e := u.NewEnumerate()
 
-	for _, sub := range subsystems {
+	for sub := range subsystems {
 		e.AddMatchSubsystem(sub)
 	}
 	e.AddMatchIsInitialized()
