@@ -26,13 +26,21 @@ var fakedevices = []device{
 	dev{"HID_NAME": "bar", "SUBSYSTEM": "hid"},
 }
 
-func TestWatchLoop(t *testing.T) {
-	rules = []rule{
-		{PropName: "HID_NAME", PropValue: "foo", Command: "foo", Action: "add"},
+func testConfig() *Config {
+	return &Config{
+		ScriptPath: "",
+		Rules: []rule{
+			{PropName: "HID_NAME", PropValue: "foo",
+				Command: "foo", Action: "add"},
+		},
 	}
+}
+
+func TestWatchLoop(t *testing.T) {
+	conf := testConfig()
 	devchan := make(chan device)
 	matchchan := make(chan rule)
-	go watchLoop(devchan, matchchan)
+	go watchLoop(devchan, matchchan, conf)
 	go func() {
 		for _, d := range fakedevices {
 			devchan <- d
@@ -51,9 +59,10 @@ func TestWatchLoop(t *testing.T) {
 
 // more an intergration test, but
 func TestCommandRunner(t *testing.T) {
+	conf := testConfig()
 	Workers = 1
 	WorkerDelay = time.Nanosecond
-	matchchan := commandRunners()
+	matchchan := commandRunners(conf)
 	matchchan <- rule{Command: "/bin/true"}
 	matchchan <- rule{Command: "/bin/false"}
 	time.Sleep(time.Millisecond)

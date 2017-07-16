@@ -1,0 +1,37 @@
+# Toml formatting: https://github.com/toml-lang/toml
+
+# Location of scripts (absolute paths ignore this)
+# ${Environment} $Variables will be expanded, but not tilde (~).
+ScriptPath = "${HOME}/bin/udev.d"
+
+# RULES
+# Subsystem is used to filter udev events monitored
+# PropName is the name of the device property to match against
+# PropValue is the value to match against (suffix match)
+# Action the udev "action" to filter on (add, remove, change, online, offline)
+# Command is the name of your script/program to run
+
+# Can watch for external display plug events and run xrandr scripts
+[[Rules]]
+Subsystem = "drm"
+PropName =  "DEVNAME"
+PropValue = "/dev/dri/card0"
+Action =    "change"
+Command =   "xrandr-set-display"
+
+# Set pulse audio default device to USB Dacs
+[[Rules]]
+Subsystem = "hid"
+PropName =  "HID_NAME"
+PropValue = "2010 REV 1.7 Audioengine D1"
+Action =    "add"
+Command =   "set-default-sink"
+
+# Run xinput configuration settings for devices
+[[Rules]]
+Subsystem = "hid"
+PropName =  "HID_NAME"
+PropValue = "Kensington Kensington Slimblade Trackball"
+Action =    "add"
+Command =   "slimblade-xinput"
+

@@ -17,72 +17,22 @@ import (
 )
 
 // ---------------------------------------------------------------------
-// Configuration
-//
-// Location of scripts (absolute paths ignore this)
-const SCRIPT_PATH = "${HOME}/bin/xinput.d"
-
-// Device rules:
-// PropName is the name of the device property to match against
-// PropValue is the value to match against (suffix match)
-// Action the udev "action" to filter on (add, remove, change, online, offline)
-// Command is the name of your script/program to run
-var rules []rule = []rule{
-	{
-		Subsystem: "hid",
-		PropName:  "HID_NAME",
-		PropValue: "FiiO DigiHug USB Audio",
-		Action:    "add",
-		Command:   "set-default-sink",
-	},
-	{
-		Subsystem: "hid",
-		PropName:  "HID_NAME",
-		PropValue: "2010 REV 1.7 Audioengine D1",
-		Action:    "add",
-		Command:   "set-default-sink",
-	},
-	{
-		Subsystem: "hid",
-		PropName:  "HID_NAME",
-		PropValue: "Kensington Kensington Slimblade Trackball",
-		Action:    "add",
-		Command:   "slimblade",
-	},
-}
-
-// ---------------------------------------------------------------------
-//
+// Workers to run triggers
 var Workers = 3
+
+// Workers delay running scripts slightly to give OS time to register device
 var WorkerDelay = 200 * time.Millisecond
 
-type rule struct {
-	PropName, PropValue, Command, Action, Subsystem string
-	limiter                                         int32
-}
-
+// Flags
 var listem bool
-var subsystems map[string]struct{} = make(map[string]struct{})
 
 func init() {
 	flag.BoolVar(&listem, "list", false, "List devices connected.")
 	flag.Parse()
-	for _, r := range rules {
-		subsystems[r.Subsystem] = struct{}{}
-	}
 }
 
-// ---------------------------------------------------------------------
-
-func main() {
-	if listem {
-		displayDeviceList()
-	} else {
-		devchan := deviceChan()
-		matchchan := commandRunners()
-		watchLoop(devchan, matchchan)
-	}
-}
+// Subsystem filters
+var subsystems map[string]struct{} = make(map[string]struct{})
 
 // abstract the *Device type so I can create test entries
 type device interface {
@@ -91,16 +41,32 @@ type device interface {
 	PropertyValue(string) string
 }
 
+// ---------------------------------------------------------------------
+
+func main() {
+	conf := getConfig()
+	for _, r := range conf.Rules {
+		subsystems[r.Subsystem] = struct{}{}
+	}
+	if listem {
+		displayDeviceList()
+	} else {
+		devchan := deviceChan()
+		matchchan := commandRunners(conf)
+		watchLoop(devchan, matchchan, conf)
+	}
+}
+
 // main loop
 // monitors udev events, looks for matches and runs commands
-func watchLoop(devchan <-chan device, matchchan chan<- rule) {
+func watchLoop(devchan <-chan device, matchchan chan<- rule, conf *Config) {
 	watched_actions := map[string]bool{}
-	for _, rule := range rules {
+	for _, rule := range conf.Rules {
 		watched_actions[rule.Action] = true
 	}
 	for d := range devchan {
 		if watched_actions[d.Action()] {
-			for _, rule := range rules {
+			for _, rule := range conf.Rules {
 				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
 				prop_test := strings.HasSuffix(pval, rule.PropValue)
 				action_test := rule.Action == d.Action()
@@ -121,7 +87,7 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 
 // Run the commands for matching rules
 // use a small pool in case a script is slow
-func commandRunners() chan<- rule {
+func commandRunners(conf *Config) chan<- rule {
 	matchchan := make(chan rule, Workers*3)
 	for i := 0; i < Workers; i++ {
 		go func() {
@@ -130,7 +96,8 @@ func commandRunners() chan<- rule {
 				fmt.Println("************************ rule fired: ", r.Command)
 				cmd := r.Command
 				if !filepath.IsAbs(cmd) {
-					cmd = filepath.Join(os.ExpandEnv(SCRIPT_PATH), r.Command)
+					cmd = filepath.Join(os.ExpandEnv(conf.ScriptPath),
+						r.Command)
 				}
 				out, err := exec.Command(cmd).CombinedOutput()
 				if err != nil {
