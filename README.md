@@ -7,9 +7,20 @@ my laptop to configure my trackball and to set my USB DAC as the default-sink
 for pulseaudio when it is plugged in. I run it as part of my user session as a
 systemd user service.
 
-Right now the property/value/command configuration is just hard coded at the
-top. I might add a config file if I feel like it or someone asks.
+The TOML formatted config files can either go under the XDG_CONFIG_HOME
+directory, by default this is...
 
+  ~/.config/udev-notify/config.toml
+
+Or you can tell it the path to the file via the environment variable.
+
+  UdevNotifyConfig
+
+See the ./example-config.toml for more on how to set it up.
+
+
+Command line options
+--------------------
 If call with '-list' it will list all your HID devices and their properties. To
 make it easier to configure new entries.
 
