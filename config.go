@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -25,6 +26,8 @@ type rule struct {
 	limiter                                         int32
 }
 
+// Find config file in XDG directory with optional override using
+// environment variable "UdevNotifyConfig".
 func configPath() string {
 	paths := xdg.Paths{
 		Override:  os.Getenv("UdevNotifyConfig"),
@@ -37,6 +40,7 @@ func configPath() string {
 	return path
 }
 
+// Loads toml into data struct
 func loadConfig(path string) *Config {
 	var conf *Config
 	var bs []byte
@@ -47,6 +51,8 @@ func loadConfig(path string) *Config {
 	if _, err = toml.Decode(string(bs), &conf); err != nil {
 		fatal(err)
 	}
+	fmt.Printf("Config file successfully loaded with %d rules.\n",
+		len(conf.Rules))
 	return conf
 }
 
