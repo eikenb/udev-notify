@@ -14,6 +14,8 @@ type Config struct {
 	ScriptPath string
 	// List of property match/script trigger rules
 	Rules []rule
+	// Populated from Rules
+	subsystems []string
 }
 
 // PropName is the name of the device property to match against
@@ -53,6 +55,14 @@ func loadConfig(path string) *Config {
 	}
 	fmt.Printf("Config file successfully loaded with %d rules.\n",
 		len(conf.Rules))
+	set := make(map[string]struct{})
+	for _, r := range conf.Rules {
+		set[r.Subsystem] = struct{}{}
+	}
+	conf.subsystems = make([]string, 0, len(set))
+	for k := range set {
+		conf.subsystems = append(conf.subsystems, k)
+	}
 	return conf
 }
 

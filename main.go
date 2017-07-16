@@ -31,9 +31,6 @@ func init() {
 	flag.Parse()
 }
 
-// Subsystem filters
-var subsystems map[string]struct{} = make(map[string]struct{})
-
 // abstract the *Device type so I can create test entries
 type device interface {
 	Action() string
@@ -45,13 +42,10 @@ type device interface {
 
 func main() {
 	conf := getConfig()
-	for _, r := range conf.Rules {
-		subsystems[r.Subsystem] = struct{}{}
-	}
 	if list_devs {
-		displayDeviceList()
+		displayDeviceList(conf)
 	} else {
-		devchan := deviceChan()
+		devchan := deviceChan(conf)
 		matchchan := commandRunners(conf)
 		watchLoop(devchan, matchchan, conf)
 	}
@@ -113,11 +107,11 @@ func commandRunners(conf *Config) chan<- rule {
 }
 
 // Returns the channel of device events
-func deviceChan() <-chan device {
+func deviceChan(conf *Config) <-chan device {
 	u := udev.Udev{}
 	m := u.NewMonitorFromNetlink("udev")
 
-	for sub := range subsystems {
+	for _, sub := range conf.subsystems {
 		m.FilterAddMatchSubsystem(sub)
 	}
 
@@ -154,11 +148,11 @@ func sighalt() <-chan os.Signal {
 }
 
 // display the list of devices
-func displayDeviceList() {
+func displayDeviceList(conf *Config) {
 	u := udev.Udev{}
 	e := u.NewEnumerate()
 
-	for sub := range subsystems {
+	for _, sub := range conf.subsystems {
 		e.AddMatchSubsystem(sub)
 	}
 	e.AddMatchIsInitialized()
