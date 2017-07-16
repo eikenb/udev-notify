@@ -122,7 +122,7 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule) {
 // Run the commands for matching rules
 // use a small pool in case a script is slow
 func commandRunners() chan<- rule {
-	matchchan := make(chan rule)
+	matchchan := make(chan rule, Workers*3)
 	for i := 0; i < Workers; i++ {
 		go func() {
 			for r := range matchchan {
