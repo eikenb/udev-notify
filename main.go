@@ -50,8 +50,8 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  -h    Help\n")
 		os.Exit(1)
 	}
-	flag.BoolVar(&list_devs, "list", false, "List devices connected")
-	flag.BoolVar(&monit, "monit", false,
+	flag.BoolVar(&list_devs, "l", false, "List devices connected")
+	flag.BoolVar(&monit, "m", false,
 		"Watch and write device events to STDOUT")
 	flag.BoolVar(&quiet, "q", false, "Quiet all normal output")
 	flag.Parse()
