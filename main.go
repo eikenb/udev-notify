@@ -97,7 +97,7 @@ func main() {
 	}
 }
 
-//
+// Print device stream
 func printerChan(devchan <-chan device) {
 	for d := range devchan {
 		log.Println(devString(d))

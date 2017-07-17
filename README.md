@@ -1,28 +1,41 @@
 Udev Device Connection Nofity/Trigger
 -------------------------------------
 
-This is a tool that watches for connecting devices via udev, it looks for ones
-that match based on a property and runs a configured command. I use this with
-my laptop to configure my trackball and to set my USB DAC as the default-sink
-for pulseaudio when it is plugged in. I run it as part of my user session as a
-systemd user service.
-
-The TOML formatted config files can either go under the XDG_CONFIG_HOME
-directory, by default this is...
-
-  ~/.config/udev-notify/config.toml
-
-Or you can tell it the path to the file via the environment variable.
-
-  UdevNotifyConfig
-
-See the ./example-config.toml for more on how to set it up.
+A tool to watch for device Udev events, matching on a property and running a
+configured command. Designed to run as part of a user session, add it to your
+appropriate place for your
+[window-manager or desktop](https://wiki.archlinux.org/index.php/Autostarting).
 
 
-Command line options
---------------------
-If call with '-list' it will list all your HID devices and their properties. To
-make it easier to configure new entries.
+Getting Started
+---------------
+
+Install the software. Via go get..
+
+    go get github.com/eikenb/udev-notify
+
+Or download a release.
+
+Say you want to run some xinput commands to configure your mouse when you plug
+it in. First you need to create a config rule for it, for which you need some
+information. To get this run udev-notify in watch mode and plug in your mouse.
+
+    udev-notify -w all
+    (plug in mouse)
+
+It will spit out a list of properties for that device event. Note the
+SUBSYSTEM, ACTION and another property that would be unique among that type of
+subsystem, like the NAME or ID_MODEL. You write up the commands in a script and
+put it all in your config file.
+
+It searches for a TOML formatted config file passed on the command line or in
+`$XDG_CONFIG_HOME/udev-notify/config.toml`.
+
+See the ./example-config.toml for the config file structure.
+
+
+NOTE: by default XDG_CONFIG_HOME is set to ~/.config
+
 
 Copyright
 ---------
