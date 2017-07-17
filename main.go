@@ -40,7 +40,8 @@ to help configuring it.
 
 Options:
 
-  subsystem - one or more udev subsystems filters (overrides configured list)
+  subsystem - One or more udev subsystems filters (overrides configured list).
+              Use the term 'all' to not filter at all (list everything).
 
 `
 
@@ -51,16 +52,15 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  -h    Help\n")
 		os.Exit(1)
 	}
-	flag.StringVar(&configfile, "c", "", "Use this config file")
+	flag.StringVar(&configfile, "c", "", "Use `configfile` for your config")
 	flag.BoolVar(&list_devs, "l", false, "List devices connected")
-	flag.BoolVar(&monit, "m", false,
+	flag.BoolVar(&monit, "w", false,
 		"Watch and write device events to STDOUT")
 	flag.BoolVar(&quiet, "q", false, "Quiet all normal output")
 	flag.Parse()
+	log.SetOutput(os.Stdout)
 	if quiet {
 		log.SetOutput(ioutil.Discard)
-	} else {
-		log.SetOutput(os.Stdout)
 	}
 	override_subsystems = flag.Args()
 }
@@ -77,7 +77,11 @@ type device interface {
 func main() {
 	conf := getConfig(configfile)
 	if len(override_subsystems) > 0 {
-		conf.subsystems = override_subsystems
+		if override_subsystems[0] == "all" {
+			conf.subsystems = conf.subsystems[:0]
+		} else {
+			conf.subsystems = override_subsystems
+		}
 		log.Println("Monitored subsystem override:", override_subsystems)
 	}
 	if list_devs {
