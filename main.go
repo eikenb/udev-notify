@@ -163,7 +163,7 @@ func commandRunners(conf *Config) chan<- rule {
 func deviceChan(conf *Config) <-chan device {
 	u := udev.Udev{}
 	m := u.NewMonitorFromNetlink("udev")
-
+	m.FilterAddMatchTag("seat")
 	for _, sub := range conf.subsystems {
 		m.FilterAddMatchSubsystem(sub)
 	}
@@ -199,7 +199,7 @@ func sighalt() <-chan os.Signal {
 func displayDeviceList(conf *Config) {
 	u := udev.Udev{}
 	e := u.NewEnumerate()
-
+	e.AddMatchTag("seat")
 	for _, sub := range conf.subsystems {
 		e.AddMatchSubsystem(sub)
 	}
