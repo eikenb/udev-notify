@@ -28,7 +28,25 @@ var list_devs bool
 var monit bool
 var monit_subsystems []string
 
+const usage_text = `Usage: %s [options] [subsystem ...]
+
+Monitor and run scripts based on udev events. Primary run with a configation
+file running in the background of your session, with other options available
+to help configuring it.
+
+Options:
+
+  subsystem - one or more udev subsystems filters (overrides configured list)
+
+`
+
 func init() {
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, usage_text, filepath.Base(os.Args[0]))
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "  -h    Help\n")
+		os.Exit(1)
+	}
 	flag.BoolVar(&list_devs, "list", false, "List devices connected.")
 	flag.BoolVar(&monit, "monit", false, "Print device events to STDOUT.")
 	flag.Parse()
