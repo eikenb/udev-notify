@@ -58,6 +58,7 @@ func init() {
 		"Watch and write device events to STDOUT")
 	flag.BoolVar(&quiet, "q", false, "Quiet all normal output")
 	flag.Parse()
+	log.SetFlags(0)
 	log.SetOutput(os.Stdout)
 	if quiet {
 		log.SetOutput(ioutil.Discard)
