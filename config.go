@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/BurntSushi/toml"
@@ -37,7 +37,7 @@ func configPath() string {
 	}
 	path, err := paths.ConfigFile("config.toml")
 	if err != nil {
-		fatal(err)
+		log.Fatal(err)
 	}
 	return path
 }
@@ -48,12 +48,12 @@ func loadConfig(path string) *Config {
 	var bs []byte
 	var err error
 	if bs, err = ioutil.ReadFile(path); err != nil {
-		fatal(err)
+		log.Fatal(err)
 	}
 	if _, err = toml.Decode(string(bs), &conf); err != nil {
-		fatal(err)
+		log.Fatal(err)
 	}
-	fmt.Printf("Config file successfully loaded with %d rules.\n",
+	log.Printf("Config file successfully loaded with %d rules.\n",
 		len(conf.Rules))
 	set := make(map[string]struct{})
 	for _, r := range conf.Rules {

@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -71,7 +72,7 @@ func main() {
 	} else if monit {
 		if len(monit_subsystems) > 0 {
 			conf.subsystems = monit_subsystems
-			fmt.Println("Monitored subsystem override:", monit_subsystems)
+			log.Println("Monitored subsystem override:", monit_subsystems)
 		}
 		devchan := deviceChan(conf)
 		printerChan(devchan)
@@ -85,7 +86,7 @@ func main() {
 //
 func printerChan(devchan <-chan device) {
 	for d := range devchan {
-		fmt.Println(devString(d))
+		log.Println(devString(d))
 	}
 }
 
@@ -125,7 +126,7 @@ func commandRunners(conf *Config) chan<- rule {
 		go func() {
 			for r := range matchchan {
 				time.Sleep(WorkerDelay)
-				fmt.Println("************************ rule fired: ", r.Command)
+				log.Println("************************ rule fired: ", r.Command)
 				cmd := r.Command
 				if !filepath.IsAbs(cmd) {
 					cmd = filepath.Join(os.ExpandEnv(conf.ScriptPath),
@@ -133,10 +134,10 @@ func commandRunners(conf *Config) chan<- rule {
 				}
 				out, err := exec.Command(cmd).CombinedOutput()
 				if err != nil {
-					fmt.Println(err)
+					log.Println(err)
 				}
 				if len(out) > 0 {
-					fmt.Printf("%s\n", out)
+					log.Printf("%s\n", out)
 				}
 			}
 		}()
@@ -157,7 +158,7 @@ func deviceChan(conf *Config) <-chan device {
 	devchan := make(chan device)
 	ch, err := m.DeviceChan(done)
 	if err != nil {
-		fatal(err)
+		log.Fatal(err)
 	}
 	go func() {
 		<-sighalt()
@@ -171,11 +172,6 @@ func deviceChan(conf *Config) <-chan device {
 		close(devchan)
 	}()
 	return devchan
-}
-
-func fatal(i ...interface{}) {
-	fmt.Fprintln(os.Stderr, i...)
-	os.Exit(1)
 }
 
 // watch for signals to quit
@@ -197,10 +193,10 @@ func displayDeviceList(conf *Config) {
 
 	udev_devices, err := e.Devices()
 	if err != nil {
-		fatal(err)
+		log.Fatal(err)
 	}
 	for _, d := range udev_devices {
-		fmt.Println(devString(d))
+		log.Println(devString(d))
 	}
 }
 
