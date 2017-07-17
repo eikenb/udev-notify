@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -25,6 +26,7 @@ var Workers = 3
 var WorkerDelay = 200 * time.Millisecond
 
 // Flags
+var quiet bool
 var list_devs bool
 var monit bool
 var monit_subsystems []string
@@ -48,11 +50,16 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  -h    Help\n")
 		os.Exit(1)
 	}
-	flag.BoolVar(&list_devs, "list", false, "List devices connected.")
-	flag.BoolVar(&monit, "monit", false, "Print device events to STDOUT.")
+	flag.BoolVar(&list_devs, "list", false, "List devices connected")
+	flag.BoolVar(&monit, "monit", false,
+		"Watch and write device events to STDOUT")
+	flag.BoolVar(&quiet, "q", false, "Quiet all normal output")
 	flag.Parse()
 	if monit {
 		monit_subsystems = flag.Args()
+	}
+	if quiet {
+		log.SetOutput(ioutil.Discard)
 	}
 }
 
