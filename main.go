@@ -29,7 +29,7 @@ var WorkerDelay = 200 * time.Millisecond
 var quiet bool
 var list_devs bool
 var monit bool
-var monit_subsystems []string
+var override_subsystems []string
 
 const usage_text = `Usage: %s [options] [subsystem ...]
 
@@ -55,12 +55,10 @@ func init() {
 		"Watch and write device events to STDOUT")
 	flag.BoolVar(&quiet, "q", false, "Quiet all normal output")
 	flag.Parse()
-	if monit {
-		monit_subsystems = flag.Args()
-	}
 	if quiet {
 		log.SetOutput(ioutil.Discard)
 	}
+	override_subsystems = flag.Args()
 }
 
 // abstract the *Device type so I can create test entries
@@ -74,13 +72,13 @@ type device interface {
 
 func main() {
 	conf := getConfig()
+	if len(override_subsystems) > 0 {
+		conf.subsystems = override_subsystems
+		log.Println("Monitored subsystem override:", override_subsystems)
+	}
 	if list_devs {
 		displayDeviceList(conf)
 	} else if monit {
-		if len(monit_subsystems) > 0 {
-			conf.subsystems = monit_subsystems
-			log.Println("Monitored subsystem override:", monit_subsystems)
-		}
 		devchan := deviceChan(conf)
 		printerChan(devchan)
 	} else {
