@@ -59,6 +59,8 @@ func init() {
 	flag.Parse()
 	if quiet {
 		log.SetOutput(ioutil.Discard)
+	} else {
+		log.SetOutput(os.Stdout)
 	}
 	override_subsystems = flag.Args()
 }
