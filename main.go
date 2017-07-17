@@ -30,6 +30,7 @@ var quiet bool
 var list_devs bool
 var monit bool
 var override_subsystems []string
+var configfile string
 
 const usage_text = `Usage: %s [options] [subsystem ...]
 
@@ -50,6 +51,7 @@ func init() {
 		fmt.Fprintf(os.Stderr, "  -h    Help\n")
 		os.Exit(1)
 	}
+	flag.StringVar(&configfile, "c", "", "Use this config file")
 	flag.BoolVar(&list_devs, "l", false, "List devices connected")
 	flag.BoolVar(&monit, "m", false,
 		"Watch and write device events to STDOUT")
@@ -71,7 +73,7 @@ type device interface {
 // ---------------------------------------------------------------------
 
 func main() {
-	conf := getConfig()
+	conf := getConfig(configfile)
 	if len(override_subsystems) > 0 {
 		conf.subsystems = override_subsystems
 		log.Println("Monitored subsystem override:", override_subsystems)

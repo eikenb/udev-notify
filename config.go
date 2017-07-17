@@ -3,7 +3,6 @@ package main
 import (
 	"io/ioutil"
 	"log"
-	"os"
 
 	"github.com/BurntSushi/toml"
 	"github.com/BurntSushi/xdg"
@@ -32,7 +31,6 @@ type rule struct {
 // environment variable "UdevNotifyConfig".
 func configPath() string {
 	paths := xdg.Paths{
-		Override:  os.Getenv("UdevNotifyConfig"),
 		XDGSuffix: "udev-notify",
 	}
 	path, err := paths.ConfigFile("config.toml")
@@ -66,6 +64,9 @@ func loadConfig(path string) *Config {
 	return conf
 }
 
-func getConfig() *Config {
-	return loadConfig(configPath())
+func getConfig(cpath string) *Config {
+	if cpath == "" {
+		cpath = configPath()
+	}
+	return loadConfig(cpath)
 }
