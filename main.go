@@ -74,17 +74,8 @@ type device interface {
 }
 
 // ---------------------------------------------------------------------
-
 func main() {
-	conf := getConfig(configfile)
-	if len(override_subsystems) > 0 {
-		if override_subsystems[0] == "all" {
-			conf.subsystems = conf.subsystems[:0]
-		} else {
-			conf.subsystems = override_subsystems
-		}
-		log.Println("Monitored subsystem override:", override_subsystems)
-	}
+	conf := getConfig(configfile, override_subsystems)
 	if list_devs {
 		displayDeviceList(conf)
 	} else if monit {

@@ -64,9 +64,24 @@ func loadConfig(path string) *Config {
 	return conf
 }
 
-func getConfig(cpath string) *Config {
+// Optional overriding of values
+func (conf *Config) overrideSubsystems(subs []string) {
+	if len(subs) > 0 {
+		if subs[0] == "all" {
+			conf.subsystems = conf.subsystems[:0]
+		} else {
+			conf.subsystems = subs
+		}
+		log.Println("Subsystem override:", subs)
+	}
+}
+
+// Combine above
+func getConfig(cpath string, subs []string) *Config {
 	if cpath == "" {
 		cpath = configPath()
 	}
-	return loadConfig(cpath)
+	conf := loadConfig(cpath)
+	conf.overrideSubsystems(subs)
+	return conf
 }
