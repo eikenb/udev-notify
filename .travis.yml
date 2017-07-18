@@ -1,0 +1,24 @@
+language: go
+go_import_path: github.com/eikenb/udev-notify
+
+go:
+  - 1.8.x
+  - tip
+
+os:
+  - linux
+
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libudev1
+      - libudev-dev
+
+install:
+  - go get -t -v .
+
+script:
+  - go test -v -q .
