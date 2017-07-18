@@ -6,6 +6,7 @@ configured command. Designed to run as part of a user session, add it to your
 appropriate place for your
 [window-manager or desktop](https://wiki.archlinux.org/index.php/Autostarting).
 
+[![Build Status](https://travis-ci.org/eikenb/udev-notify.svg?branch=master)](https://travis-ci.org/eikenb/udev-notify)
 
 Getting Started
 ---------------
