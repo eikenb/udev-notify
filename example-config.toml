@@ -14,24 +14,25 @@ ScriptPath = "${HOME}/bin/udev.d"
 # Can watch for external display plug events and run xrandr scripts
 [[Rules]]
 Subsystem = "drm"
-PropName =  "DEVNAME"
+PropName  = "DEVNAME"
 PropValue = "/dev/dri/card0"
-Action =    "change"
-Command =   "xrandr-set-display"
+Action    = "change"
+Command   = "set-display"
+
 
 # Set pulse audio default device to USB Dacs
 [[Rules]]
-Subsystem = "hid"
-PropName =  "HID_NAME"
-PropValue = "2010 REV 1.7 Audioengine D1"
-Action =    "add"
-Command =   "set-default-sink"
+Subsystem = "sound"
+PropName  = "ID_MODEL"
+PropValue = "Audioengine_D1"
+Action    = "change"
+Command   = "set-default-sink"
 
 # Run xinput configuration settings for devices
 [[Rules]]
-Subsystem = "hid"
-PropName =  "HID_NAME"
-PropValue = "Kensington Kensington Slimblade Trackball"
-Action =    "add"
-Command =   "slimblade-xinput"
+Subsystem = "input"
+PropName  = "ID_MODEL"
+PropValue = "Kensington_Slimblade_Trackball"
+Action    = "add"
+Command   = "slimblade"
 
