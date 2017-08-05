@@ -34,5 +34,5 @@ Subsystem = "input"
 PropName  = "ID_MODEL"
 PropValue = "Kensington_Slimblade_Trackball"
 Action    = "add"
-Command   = "slimblade"
+Command   = "xinput-slimblade"
 

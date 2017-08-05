@@ -29,6 +29,15 @@ SUBSYSTEM, ACTION and another property that would be unique among that type of
 subsystem, like the NAME or ID_MODEL. You write up the commands in a script and
 put it all in your config file.
 
+An entry would look something like this..
+
+[[Rules]]
+Subsystem = "input"
+Action    = "add"
+PropName  = "ID_MODEL"
+PropValue = "Kensington_Slimblade_Trackball"
+Command   = "xinput-slimblade"
+
 It searches for a TOML formatted config file passed on the command line or in
 `$XDG_CONFIG_HOME/udev-notify/config.toml`.
 
