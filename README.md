@@ -31,12 +31,12 @@ put it all in your config file.
 
 An entry would look something like this..
 
-[[Rules]]
-Subsystem = "input"
-Action    = "add"
-PropName  = "ID_MODEL"
-PropValue = "Kensington_Slimblade_Trackball"
-Command   = "xinput-slimblade"
+    [[Rules]]
+    Subsystem = "input"
+    Action    = "add"
+    PropName  = "ID_MODEL"
+    PropValue = "Kensington_Slimblade_Trackball"
+    Command   = "xinput-slimblade"
 
 It searches for a TOML formatted config file passed on the command line or in
 `$XDG_CONFIG_HOME/udev-notify/config.toml`.
