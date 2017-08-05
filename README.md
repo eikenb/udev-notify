@@ -44,7 +44,7 @@ It searches for a TOML formatted config file passed on the command line or in
 See the ./example-config.toml for the config file structure.
 
 
-NOTE: by default XDG_CONFIG_HOME is set to ~/.config
+NOTE: By default XDG_CONFIG_HOME is set to ~/.config on most Linux systems.
 
 
 Copyright
