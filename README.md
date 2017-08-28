@@ -46,6 +46,9 @@ See the ./example-config.toml for the config file structure.
 
 NOTE: By default XDG_CONFIG_HOME is set to ~/.config on most Linux systems.
 
+NOTE: Udev can get triggered sometimes at odd times (docker seems to trigger
+  some events). So it is best to try to make your commands idempotent.
+
 
 Copyright
 ---------
