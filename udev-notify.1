@@ -1,0 +1,36 @@
+.TH man 1 "01 Sept 2017" "1.0" "udev-notify man page"
+.SH Name
+udev-notify
+
+\" nroff formatted man page
+\" 'man -l udev-notify.1' to view
+
+.SH Synopsis
+udev-notify [\-lqwh][\-c configfile] [subsystem ...]
+
+.SH Options
+.TP
+.BR \-c\ configfile
+Specify file to use for config ($XDG_CONFIG_HOME/udev-notify/config.toml)
+.TP
+.BR \-l
+List all udev detected/connected devices.
+.TP
+.BR \-q
+Quite all normal output.
+.TP
+.BR \-w
+Print watch and write device events to stdout.
+.TP
+.BR \-h
+Help.
+
+.SH Description
+Monitor and run scripts based on udev events. Primary run with a configation
+file running in the background of your session, with other options available to
+help configuring it.
+
+You can also pass one or more udev subsystems to use as filters (overrides
+configured list). Use the term 'all' to not filter at all (list everything).
+Mostly useful in conjunction with \-l or \-w when testing your devices.
+
