@@ -1,8 +1,14 @@
 package main
 
 import (
+	"io/ioutil"
+	"log"
 	"testing"
 )
+
+func init() {
+	log.SetOutput(ioutil.Discard)
+}
 
 func TestConfigLoad(t *testing.T) {
 	conf := loadConfig("./example-config.toml")
