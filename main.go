@@ -37,7 +37,8 @@ const usage_text = `Usage: %s [options] [subsystem ...]
 
 Monitor and run scripts based on udev events. Primary run with a configation
 file running in the background of your session, with other options available
-to help configuring it.
+to help configuring it. Configuration file defaults to standard XDG location
+(usually ~/.config/udev-notify/config.toml).
 
 Options:
 
