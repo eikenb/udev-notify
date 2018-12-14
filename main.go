@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -15,7 +16,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jochenvg/go-udev"
+	udev "github.com/jochenvg/go-udev"
 )
 
 // ---------------------------------------------------------------------
@@ -159,15 +160,15 @@ func deviceChan(conf *Config) <-chan device {
 		m.FilterAddMatchSubsystem(sub)
 	}
 
-	done := make(chan struct{})
+	ctx, cancel := context.WithCancel(context.Background())
 	devchan := make(chan device)
-	ch, err := m.DeviceChan(done)
+	ch, err := m.DeviceChan(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go func() {
 		<-sighalt()
-		close(done)
+		cancel()
 	}()
 	// wrap udev's chan in one that I can control the type
 	go func() {
