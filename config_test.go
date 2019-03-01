@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"reflect"
 	"testing"
 )
 
@@ -21,6 +22,10 @@ func TestConfigLoad(t *testing.T) {
 	if conf.Rules[1].PropName != "ID_MODEL" {
 		t.Error("Bad Rules field, got: ", conf.Rules[1].PropName,
 			"want: HID_NAME")
+	}
+	if !reflect.DeepEqual(conf.Rules[1].Args, []string{"set-default-sink", "Audioengine_D1"}) {
+		t.Error("Bad Args field, got: ", conf.Rules[1].Args,
+			"want: [set-default-sink, Audioengine_D1]")
 	}
 }
 

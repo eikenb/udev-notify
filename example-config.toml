@@ -10,6 +10,7 @@ ScriptPath = "${HOME}/bin/udev.d"
 # PropValue is the value to match against (suffix match)
 # Action the udev "action" to filter on (add, remove, change, online, offline)
 # Command is the name of your script/program to run
+# Args is a list of arguments to pass to the script/program
 
 # Can watch for external display plug events and run xrandr scripts
 [[Rules]]
@@ -26,7 +27,8 @@ Subsystem = "sound"
 PropName  = "ID_MODEL"
 PropValue = "Audioengine_D1"
 Action    = "change"
-Command   = "set-default-sink"
+Command   = "pactl"
+Args      = ["set-default-sink", "Audioengine_D1"]
 
 # Run xinput configuration settings for devices
 [[Rules]]
