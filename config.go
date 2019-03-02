@@ -21,9 +21,11 @@ type Config struct {
 // PropValue is the value to match against (suffix match)
 // Action the udev "action" to filter on (add, remove, change, online, offline)
 // Command is the name of your script/program to run
+// Args is a list of arguments to pass to the script/program
 // Subsystem is used to filter udev events monitored
 type rule struct {
 	PropName, PropValue, Command, Action, Subsystem string
+	Args                                            []string
 	limiter                                         int32
 }
 

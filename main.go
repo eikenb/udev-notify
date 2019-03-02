@@ -139,7 +139,7 @@ func commandRunners(conf *Config) chan<- rule {
 					cmd = filepath.Join(os.ExpandEnv(conf.ScriptPath),
 						r.Command)
 				}
-				out, err := exec.Command(cmd).CombinedOutput()
+				out, err := exec.Command(cmd, r.Args...).CombinedOutput()
 				if err != nil {
 					log.Println(err)
 				}
