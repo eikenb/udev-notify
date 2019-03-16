@@ -7,7 +7,6 @@ go:
 os:
   - linux
 
-dist: trusty
 sudo: false
 
 addons:
