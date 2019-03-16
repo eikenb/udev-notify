@@ -2,7 +2,6 @@ language: go
 go_import_path: github.com/eikenb/udev-notify
 
 go:
-  - 1.8.x
   - tip
 
 os:
@@ -21,4 +20,4 @@ install:
   - go get -t -v .
 
 script:
-  - go test -v -q .
+  - go test -v .
