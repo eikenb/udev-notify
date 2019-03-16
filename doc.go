@@ -24,15 +24,15 @@ An entry would look something like this..
     PropValue = "Kensington_Slimblade_Trackball"
     Command   = "xinput-slimblade"
 
-It searches for a TOML formatted config file passed on the command line or in
-`$XDG_CONFIG_HOME/udev-notify/config.toml`.
+It searches for a TOML formatted config file passed on the command line or in..
 
-See the ./example-config.toml for the config file structure.
+	$XDG_CONFIG_HOME/udev-notify/config.toml
 
+See the example-config.toml for the config file structure.
 
 NOTE: By default XDG_CONFIG_HOME is set to ~/.config on most Linux systems.
 
 NOTE: Udev can get triggered sometimes at odd times (docker seems to trigger
-  some events). So it is best to try to make your commands idempotent.
+some events). So it is best to try to make your commands idempotent.
 */
 package main
