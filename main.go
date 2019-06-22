@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"sync/atomic"
 	"syscall"
 	"time"
 
@@ -100,6 +99,7 @@ func printerChan(devchan <-chan device) {
 // main loop
 // monitors udev events, looks for matches and runs commands
 func watchLoop(devchan <-chan device, matchchan chan<- rule, conf *Config) {
+	rate_limiter := map[string]struct{}{}
 	watched_actions := map[string]bool{}
 	for _, rule := range conf.Rules {
 		watched_actions[rule.Action] = true
@@ -111,10 +111,11 @@ func watchLoop(devchan <-chan device, matchchan chan<- rule, conf *Config) {
 				prop_test := strings.HasSuffix(pval, rule.PropValue)
 				action_test := rule.Action == d.Action()
 				if prop_test && action_test {
-					if atomic.CompareAndSwapInt32(&rule.limiter, 0, 1) {
+					if _, ok := rate_limiter[rule.Command]; !ok {
+						rate_limiter[rule.Command] = struct{}{}
 						go func() {
 							time.Sleep(time.Second)
-							atomic.CompareAndSwapInt32(&rule.limiter, 1, 0)
+							delete(rate_limiter, rule.Command)
 						}()
 						matchchan <- rule
 					}

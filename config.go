@@ -26,7 +26,6 @@ type Config struct {
 type rule struct {
 	PropName, PropValue, Command, Action, Subsystem string
 	Args                                            []string
-	limiter                                         int32
 }
 
 // Find config file in XDG directory with optional override using
