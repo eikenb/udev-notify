@@ -46,7 +46,7 @@ Options:
 
 `
 
-func init() {
+func flagParse() {
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, usage_text, filepath.Base(os.Args[0]))
 		flag.PrintDefaults()
@@ -76,6 +76,7 @@ type device interface {
 
 // ---------------------------------------------------------------------
 func main() {
+	flagParse()
 	conf := getConfig(configfile, override_subsystems)
 	if list_devs {
 		displayDeviceList(conf)
