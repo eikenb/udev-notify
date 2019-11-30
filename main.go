@@ -48,68 +48,23 @@ func main() {
 	}
 }
 
-// Print device stream
-func printerChan(devchan <-chan device) {
-	for d := range devchan {
+// display the list of devices
+func displayDeviceList(conf *Config) {
+	u := udev.Udev{}
+	e := u.NewEnumerate()
+	e.AddMatchTag("seat")
+	for _, sub := range conf.subsystems {
+		e.AddMatchSubsystem(sub)
+	}
+	e.AddMatchIsInitialized()
+
+	udev_devices, err := e.Devices()
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, d := range udev_devices {
 		log.Println(devString(d))
 	}
-}
-
-// main loop
-// monitors udev events, looks for matches and runs commands
-func watchLoop(devchan <-chan device, matchchan chan<- rule, conf *Config) {
-	rate_limiter := map[string]struct{}{}
-	watched_actions := map[string]bool{}
-	for _, rule := range conf.Rules {
-		watched_actions[rule.Action] = true
-	}
-	for d := range devchan {
-		if watched_actions[d.Action()] {
-			for _, rule := range conf.Rules {
-				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
-				prop_test := strings.HasSuffix(pval, rule.PropValue)
-				action_test := rule.Action == d.Action()
-				if prop_test && action_test {
-					if _, ok := rate_limiter[rule.Command]; !ok {
-						rate_limiter[rule.Command] = struct{}{}
-						go func() {
-							time.Sleep(time.Second)
-							delete(rate_limiter, rule.Command)
-						}()
-						matchchan <- rule
-					}
-				}
-			}
-		}
-	}
-	close(matchchan)
-}
-
-// Run the commands for matching rules
-// use a small pool in case a script is slow
-func commandRunners(conf *Config) chan<- rule {
-	matchchan := make(chan rule, Workers*3)
-	for i := 0; i < Workers; i++ {
-		go func() {
-			for r := range matchchan {
-				time.Sleep(WorkerDelay)
-				log.Println("************************ rule fired: ", r.Command)
-				cmd := r.Command
-				if !filepath.IsAbs(cmd) {
-					cmd = filepath.Join(os.ExpandEnv(conf.ScriptPath),
-						r.Command)
-				}
-				out, err := exec.Command(cmd, r.Args...).CombinedOutput()
-				if err != nil {
-					log.Println(err)
-				}
-				if len(out) > 0 {
-					log.Printf("%s\n", out)
-				}
-			}
-		}()
-	}
-	return matchchan
 }
 
 // Returns the channel of device events
@@ -148,23 +103,68 @@ func sighalt() <-chan os.Signal {
 	return interrupts
 }
 
-// display the list of devices
-func displayDeviceList(conf *Config) {
-	u := udev.Udev{}
-	e := u.NewEnumerate()
-	e.AddMatchTag("seat")
-	for _, sub := range conf.subsystems {
-		e.AddMatchSubsystem(sub)
-	}
-	e.AddMatchIsInitialized()
-
-	udev_devices, err := e.Devices()
-	if err != nil {
-		log.Fatal(err)
-	}
-	for _, d := range udev_devices {
+// Print device stream
+func printerChan(devchan <-chan device) {
+	for d := range devchan {
 		log.Println(devString(d))
 	}
+}
+
+// Run the commands for matching rules
+// use a small pool in case a script is slow
+func commandRunners(conf *Config) chan<- rule {
+	matchchan := make(chan rule, Workers*3)
+	for i := 0; i < Workers; i++ {
+		go func() {
+			for r := range matchchan {
+				time.Sleep(WorkerDelay)
+				log.Println("************************ rule fired: ", r.Command)
+				cmd := r.Command
+				if !filepath.IsAbs(cmd) {
+					cmd = filepath.Join(os.ExpandEnv(conf.ScriptPath),
+						r.Command)
+				}
+				out, err := exec.Command(cmd, r.Args...).CombinedOutput()
+				if err != nil {
+					log.Println(err)
+				}
+				if len(out) > 0 {
+					log.Printf("%s\n", out)
+				}
+			}
+		}()
+	}
+	return matchchan
+}
+
+// main loop
+// monitors udev events, looks for matches and runs commands
+func watchLoop(devchan <-chan device, matchchan chan<- rule, conf *Config) {
+	rate_limiter := map[string]struct{}{}
+	watched_actions := map[string]bool{}
+	for _, rule := range conf.Rules {
+		watched_actions[rule.Action] = true
+	}
+	for d := range devchan {
+		if watched_actions[d.Action()] {
+			for _, rule := range conf.Rules {
+				pval := strings.TrimSpace(d.PropertyValue(rule.PropName))
+				prop_test := strings.HasSuffix(pval, rule.PropValue)
+				action_test := rule.Action == d.Action()
+				if prop_test && action_test {
+					if _, ok := rate_limiter[rule.Command]; !ok {
+						rate_limiter[rule.Command] = struct{}{}
+						go func() {
+							time.Sleep(time.Second)
+							delete(rate_limiter, rule.Command)
+						}()
+						matchchan <- rule
+					}
+				}
+			}
+		}
+	}
+	close(matchchan)
 }
 
 // returns list of connected devices and properties
