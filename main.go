@@ -78,12 +78,13 @@ type device interface {
 func main() {
 	flagParse()
 	conf := getConfig(configfile, override_subsystems)
-	if list_devs {
+	switch {
+	case list_devs:
 		displayDeviceList(conf)
-	} else if monit {
+	case monit:
 		devchan := deviceChan(conf)
 		printerChan(devchan)
-	} else {
+	default:
 		devchan := deviceChan(conf)
 		matchchan := commandRunners(conf)
 		watchLoop(devchan, matchchan, conf)
