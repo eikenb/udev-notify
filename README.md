@@ -6,7 +6,9 @@ configured command. Designed to run as part of a user session, add it to your
 appropriate place for your
 [window-manager or desktop](https://wiki.archlinux.org/index.php/Autostarting).
 
-[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/eikenb/udev-notify) [![Build Status](http://img.shields.io/travis/eikenb/udev-notify.svg?style=flat-square)](https://travis-ci.org/eikenb/udev-notify) [![CircleCI](https://circleci.com/gh/eikenb/udev-notify.svg?style=svg)](https://circleci.com/gh/eikenb/udev-notify)
+[![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/eikenb/udev-notify)
+[![CircleCI](https://circleci.com/gh/eikenb/udev-notify.svg?style=svg)](https://circleci.com/gh/eikenb/udev-notify)
+[![Build Status](https://github.com/eikenb/udev-notify/actions/workflows/ci.yml/badge.svg)](https://github.com/eikenb/udev-notify/actions)
 
 Getting Started
 ---------------
