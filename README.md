@@ -1,5 +1,5 @@
-Rewrite
--------
+Deprecated (Rewrite)
+--------------------
 
 Please note that I'm no longer maintaining this project as I'm working on
 a rewrite using a new pattern and a native Go library.
