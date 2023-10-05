@@ -13,7 +13,6 @@ appropriate place for your
 [window-manager or desktop](https://wiki.archlinux.org/index.php/Autostarting).
 
 [![GoDoc](http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](http://godoc.org/github.com/eikenb/udev-notify)
-[![CircleCI](https://circleci.com/gh/eikenb/udev-notify.svg?style=svg)](https://circleci.com/gh/eikenb/udev-notify)
 [![Build Status](https://github.com/eikenb/udev-notify/actions/workflows/ci.yml/badge.svg)](https://github.com/eikenb/udev-notify/actions)
 
 Getting Started
